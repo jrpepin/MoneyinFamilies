@@ -1,3 +1,5 @@
+// Data for this analysis can be found at http://www.tessexperiments.org/data/pepin791.html
+
 // Change the project directory and project data to your local settings.
 global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code"
 
