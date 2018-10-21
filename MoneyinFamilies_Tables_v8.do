@@ -3,7 +3,7 @@ global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code"
 
 // Code variables and create analytic sample
 cd 		"$projdir"
-do		"$projdir/FamilyIncome_Measures.do"
+do		"$projdir/MoneyinFamilies_Measures.do"
 
 // Missing data
 tab 	organ, m		/* Drop people who didn't answer the primary question of interest 	*/
