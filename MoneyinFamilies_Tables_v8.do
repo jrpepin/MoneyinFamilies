@@ -1,5 +1,5 @@
 // Set the project directory folder where data and do files are saved
-global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code"
+global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code/MoneyinFamilies"
 
 // Code variables and create analytic sample
 cd 		"$projdir"
@@ -70,21 +70,45 @@ mlogtest, 	wald
 *mlogtest, 	lr				/* Can't be run with survey weights or the robust option */
 
 // Figure for presentation (not in paper)
+********************************************************************************************
+/* This code doesn't run all the way through. Must run m1 after each test */
+/*
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 eststo m1: 	mlogit 		organize 	i.mar i.dur i.par i.relinc  $ivars, robust baseoutcome(1)
 
 margins i.mar									, predict(outcome(1)) 	/* Shared 	*/
-margins i.mar									, predict(outcome(3))	/* Both	  	*/
+margins i.mar									, predict(outcome(1)) 	 coeflegend post
+				test (_b[1bn.mar]=_b[2.mar])
+				
+margins i.mar									, predict(outcome(3))	/* Both	  	*/ 
+margins i.mar									, predict(outcome(3))	coeflegend post
+				test (_b[1bn.mar]=_b[2.mar])
+
 margins i.mar									, predict(outcome(2))	/* Separate	*/
+margins i.mar									, predict(outcome(2))	coeflegend post
+				test (_b[1bn.mar]=_b[2.mar])
 
 margins i.dur									, predict(outcome(1)) 	/* Shared 	*/
-margins i.dur									, predict(outcome(3))	/* Both	  	*/
-margins i.dur									, predict(outcome(2))	/* Separate	*/
+margins i.dur									, predict(outcome(1)) 	coeflegend post
+				test (_b[1bn.dur]=_b[2.dur])
 
+margins i.dur									, predict(outcome(3))	/* Both	  	*/
+margins i.dur									, predict(outcome(3))	coeflegend post
+				test (_b[1bn.dur]=_b[2.dur])
+margins i.dur									, predict(outcome(2))	/* Separate	*/
+margins i.dur									, predict(outcome(2))	coeflegend post
+				test (_b[1bn.dur]=_b[2.dur])
 
 margins i.par									, predict(outcome(1)) 	/* Shared 	*/
+margins i.par									, predict(outcome(1)) 	coeflegend post
+				test (_b[1bn.par]=_b[2.par])
 margins i.par									, predict(outcome(3))	/* Both	  	*/
+margins i.par									, predict(outcome(3))	coeflegend post
+				test (_b[1bn.par]=_b[2.par])
 margins i.par									, predict(outcome(2))	/* Separate	*/
+margins i.par									, predict(outcome(2))	coeflegend post
+				test (_b[1bn.par]=_b[2.par])
+*/
 
 ********************************************************************************************
 // Table 4 -- Marital Status Interactions
@@ -116,7 +140,9 @@ mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
 
 * SHARED
 // use "coeflegend post" option to see what Stata calls each variable
-margins 	i.mardur									, predict(outcome(1)) /* coeflegend post */
+mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.mardur									, predict(outcome(1)) /* get CI */
+margins 	i.mardur									, predict(outcome(1)) coeflegend post
 			test (1bn.mardur=2.mardur)
 			test (1bn.mardur=3.mardur)
 			test (1bn.mardur=4.mardur)
@@ -124,29 +150,21 @@ margins 	i.mardur									, predict(outcome(1)) /* coeflegend post */
 			test (2.mardur=4.mardur)
 			test (3.mardur=4.mardur)
 			
-			nlcom _b[1bn.mardur]
-			nlcom _b[2.mardur]
-			nlcom _b[3.mardur]
-			nlcom _b[4.mardur]
-			
-
 *BOTH
-margins 	i.mardur									, predict(outcome(3)) /* coeflegend post */
+mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.mardur									, predict(outcome(3)) /* get CI */
+margins 	i.mardur									, predict(outcome(3)) coeflegend post
 			test (1bn.mardur=2.mardur)
 			test (1bn.mardur=3.mardur)
 			test (1bn.mardur=4.mardur)
 			test (2.mardur=3.mardur)
 			test (2.mardur=4.mardur)
 			test (3.mardur=4.mardur)
-			
-			nlcom _b[1bn.mardur]
-			nlcom _b[2.mardur]
-			nlcom _b[3.mardur]
-			nlcom _b[4.mardur]
-
 
 * SEPARATE
-margins 	i.mardur									, predict(outcome(2)) /* coeflegend post */
+mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.mardur									, predict(outcome(2)) /* get CI */
+margins 	i.mardur									, predict(outcome(2)) coeflegend post
 			test (1bn.mardur=2.mardur)
 			test (1bn.mardur=3.mardur)
 			test (1bn.mardur=4.mardur)
@@ -154,11 +172,6 @@ margins 	i.mardur									, predict(outcome(2)) /* coeflegend post */
 			test (2.mardur=4.mardur)
 			test (3.mardur=4.mardur)
 			
-			nlcom _b[1bn.mardur]
-			nlcom _b[2.mardur]
-			nlcom _b[3.mardur]
-			nlcom _b[4.mardur]
-
 // Marital status * Parental Status
 ********************************************************************************************
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
@@ -182,24 +195,22 @@ mlogtest, 	wald
 
 ********************************************************************************************
 // Figure 3
-mlogit 		organize 	i.marpar 	i.dur i.relinc  $ivars, robust baseoutcome(1)
+global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 
 * SHARED
+mlogit 		organize 	i.marpar 	i.dur i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.marpar									, predict(outcome(1)) /* Get CI */
 margins 	i.marpar									, predict(outcome(1)) coeflegend post
 			test (1bn.marpar=2.marpar)
 			test (1bn.marpar=3.marpar)
 			test (1bn.marpar=4.marpar)
 			test (2.marpar=3.marpar)
 			test (2.marpar=4.marpar)
-			test (3.marpar=4.marpar)
-			
-			nlcom _b[1bn.marpar]
-			nlcom _b[2.marpar]
-			nlcom _b[3.marpar]
-			nlcom _b[4.marpar]
-			
+			test (3.marpar=4.marpar)	
 
 *BOTH
+mlogit 		organize 	i.marpar 	i.dur i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.marpar									, predict(outcome(3)) /* Get CI */
 margins 	i.marpar									, predict(outcome(3)) coeflegend post
 			test (1bn.marpar=2.marpar)
 			test (1bn.marpar=3.marpar)
@@ -207,14 +218,10 @@ margins 	i.marpar									, predict(outcome(3)) coeflegend post
 			test (2.marpar=3.marpar)
 			test (2.marpar=4.marpar)
 			test (3.marpar=4.marpar)
-			
-			nlcom _b[1bn.marpar]
-			nlcom _b[2.marpar]
-			nlcom _b[3.marpar]
-			nlcom _b[4.marpar]
-
 
 * SEPARATE
+mlogit 		organize 	i.marpar 	i.dur i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.marpar									, predict(outcome(2)) /* Get CI */
 margins 	i.marpar									, predict(outcome(2)) coeflegend post
 			test (1bn.marpar=2.marpar)
 			test (1bn.marpar=3.marpar)
@@ -222,12 +229,6 @@ margins 	i.marpar									, predict(outcome(2)) coeflegend post
 			test (2.marpar=3.marpar)
 			test (2.marpar=4.marpar)
 			test (3.marpar=4.marpar)
-			
-			nlcom _b[1bn.marpar]
-			nlcom _b[2.marpar]
-			nlcom _b[3.marpar]
-			nlcom _b[4.marpar]
-
 
 ********************************************************************************************
 // Table 5 -- Statistical Analysis of Perceptions of Degree of Partial-Pooling
@@ -294,31 +295,17 @@ margins 	i.relinc
 			test (2.relinc=3.relinc)		/*FB to EE*/
 			test (1bn.relinc=2.relinc)		/*MB to FB*/
 			
-			nlcom _b[1bn.relinc]
-			nlcom _b[2.relinc]
-			nlcom _b[3.relinc]
-
-			
 regress		hiscent 	i.marpar	i.relinc	dur	$ivars
 margins 	i.relinc
 			test (1bn.relinc=3.relinc)		/*MB to EE*/
 			test (2.relinc=3.relinc)		/*FB to EE*/
 			test (1bn.relinc=2.relinc)		/*MB to FB*/
-
-			nlcom _b[1bn.relinc]
-			nlcom _b[2.relinc]
-			nlcom _b[3.relinc]
-
 			
 regress		hercent 	i.marpar	i.relinc	dur	$ivars
 margins 	i.relinc
 			test (1bn.relinc=3.relinc)		/*MB to EE*/
 			test (2.relinc=3.relinc)		/*FB to EE*/
 			test (1bn.relinc=2.relinc)		/*MB to FB*/
-			
-			nlcom _b[1bn.relinc]
-			nlcom _b[2.relinc]
-			nlcom _b[3.relinc]
 
 //Appendix Figure
 /*
