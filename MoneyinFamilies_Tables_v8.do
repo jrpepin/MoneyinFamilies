@@ -1,5 +1,6 @@
 // Set the project directory folder where data and do files are saved
-global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code/MoneyinFamilies"
+* global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code/MoneyinFamilies" /* Home */
+global projdir 	= 	"\\prc-cs-f9dkb42\jpepin$\MoneyinFamilies" /* Campus */
 
 // Code variables and create analytic sample
 cd 		"$projdir"
@@ -58,7 +59,7 @@ tabstat		female		rmar		rcohab		nevmar		altmar		child				///
 // Marital status, duration, parental status, relative earnings
 // Use robust option to match outcome of svy output. Can't use svy and get BIC, hausman, or lr
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
-eststo m1: 	mlogit 		organize 	i.mar i.dur i.par i.relinc  $ivars, robust baseoutcome(1)
+eststo m1: 	mlogit 		organize 	i.mar i.par i.dur i.relinc  $ivars, robust baseoutcome(1)
 
 esttab  m1 using FamilyIncome--table3.csv, cells(b(star fmt(2)) se(par fmt(2))) ///
 		varlabels(_cons Constant) legend label stats(N) stardetach replace
@@ -116,61 +117,6 @@ margins i.par									, predict(outcome(2))	coeflegend post
 // Be careful here because the relative earning coefficients come out in the opposite order 
 // as presented in the tables.
 
-// Marital status * Duration
-********************************************************************************************
-global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
-eststo m1: 	mlogit 		organize 	i.mardur 		i.par i.relinc  $ivars, robust baseoutcome(1)
-
-esttab  m1 using FamilyIncome--table4a.csv, cells(b(star fmt(2)) se(par fmt(2))) ///
-		varlabels(_cons Constant) legend label stats(N) stardetach replace
-estat 		ic
-mlogtest, 	combine
-*mlogtest, 	hausman			/* Can't be run with survey weights or the robust option */
-*mlogtest, 	hausman base	/* Can't be run with survey weights or the robust option */
-mlogtest, 	wald
-*mlogtest, 	lr				/* Can't be run with survey weights or the robust option */
-
-// change reference group for comparisons
-			mlogit 		organize 	ib(2).mardur 	i.par i.relinc  $ivars, robust baseoutcome(1) /* Cohab parents */
-			mlogit 		organize 	ib(3).mardur 	i.par i.relinc  $ivars, robust baseoutcome(1) /* Married nonparents */
-
-
-// Figure 2
-mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
-
-* SHARED
-// use "coeflegend post" option to see what Stata calls each variable
-mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
-margins 	i.mardur									, predict(outcome(1)) /* get CI */
-margins 	i.mardur									, predict(outcome(1)) coeflegend post
-			test (1bn.mardur=2.mardur)
-			test (1bn.mardur=3.mardur)
-			test (1bn.mardur=4.mardur)
-			test (2.mardur=3.mardur)
-			test (2.mardur=4.mardur)
-			test (3.mardur=4.mardur)
-			
-*BOTH
-mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
-margins 	i.mardur									, predict(outcome(3)) /* get CI */
-margins 	i.mardur									, predict(outcome(3)) coeflegend post
-			test (1bn.mardur=2.mardur)
-			test (1bn.mardur=3.mardur)
-			test (1bn.mardur=4.mardur)
-			test (2.mardur=3.mardur)
-			test (2.mardur=4.mardur)
-			test (3.mardur=4.mardur)
-
-* SEPARATE
-mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
-margins 	i.mardur									, predict(outcome(2)) /* get CI */
-margins 	i.mardur									, predict(outcome(2)) coeflegend post
-			test (1bn.mardur=2.mardur)
-			test (1bn.mardur=3.mardur)
-			test (1bn.mardur=4.mardur)
-			test (2.mardur=3.mardur)
-			test (2.mardur=4.mardur)
-			test (3.mardur=4.mardur)
 			
 // Marital status * Parental Status
 ********************************************************************************************
@@ -194,7 +140,7 @@ mlogtest, 	wald
 
 
 ********************************************************************************************
-// Figure 3
+// Figure 2
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 
 * SHARED
@@ -230,6 +176,63 @@ margins 	i.marpar									, predict(outcome(2)) coeflegend post
 			test (2.marpar=4.marpar)
 			test (3.marpar=4.marpar)
 
+// Marital status * Duration
+********************************************************************************************
+global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
+eststo m1: 	mlogit 		organize 	i.mardur 		i.par i.relinc  $ivars, robust baseoutcome(1)
+
+esttab  m1 using FamilyIncome--table4a.csv, cells(b(star fmt(2)) se(par fmt(2))) ///
+		varlabels(_cons Constant) legend label stats(N) stardetach replace
+estat 		ic
+mlogtest, 	combine
+*mlogtest, 	hausman			/* Can't be run with survey weights or the robust option */
+*mlogtest, 	hausman base	/* Can't be run with survey weights or the robust option */
+mlogtest, 	wald
+*mlogtest, 	lr				/* Can't be run with survey weights or the robust option */
+
+// change reference group for comparisons
+			mlogit 		organize 	ib(2).mardur 	i.par i.relinc  $ivars, robust baseoutcome(1) /* Cohab parents */
+			mlogit 		organize 	ib(3).mardur 	i.par i.relinc  $ivars, robust baseoutcome(1) /* Married nonparents */
+
+
+// Figure 3
+mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+
+* SHARED
+// use "coeflegend post" option to see what Stata calls each variable
+mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.mardur									, predict(outcome(1)) /* get CI */
+margins 	i.mardur									, predict(outcome(1)) coeflegend post
+			test (1bn.mardur=2.mardur)
+			test (1bn.mardur=3.mardur)
+			test (1bn.mardur=4.mardur)
+			test (2.mardur=3.mardur)
+			test (2.mardur=4.mardur)
+			test (3.mardur=4.mardur)
+			
+*BOTH
+mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.mardur									, predict(outcome(3)) /* get CI */
+margins 	i.mardur									, predict(outcome(3)) coeflegend post
+			test (1bn.mardur=2.mardur)
+			test (1bn.mardur=3.mardur)
+			test (1bn.mardur=4.mardur)
+			test (2.mardur=3.mardur)
+			test (2.mardur=4.mardur)
+			test (3.mardur=4.mardur)
+
+* SEPARATE
+mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+margins 	i.mardur									, predict(outcome(2)) /* get CI */
+margins 	i.mardur									, predict(outcome(2)) coeflegend post
+			test (1bn.mardur=2.mardur)
+			test (1bn.mardur=3.mardur)
+			test (1bn.mardur=4.mardur)
+			test (2.mardur=3.mardur)
+			test (2.mardur=4.mardur)
+			test (3.mardur=4.mardur)
+
+			
 ********************************************************************************************
 // Table 5 -- Statistical Analysis of Perceptions of Degree of Partial-Pooling
 ********************************************************************************************

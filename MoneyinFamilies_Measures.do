@@ -1,11 +1,12 @@
 // Data for this analysis can be found at http://www.tessexperiments.org/data/pepin791.html
 
 // Change the project directory and project data to your local settings.
-global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code"
+* global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code"
+global projdir 	= 	"\\prc-cs-f9dkb42\jpepin$\MoneyinFamilies" /* Campus */
 
 // Replace text in quotes with name (and location) of data file
-global projdata =	"D:/Dropbox/Data/TESS/TESS3_217_Pepin_Client.dta"
-
+* global projdata =	"D:/Dropbox/Data/TESS/TESS3_217_Pepin_Client.dta"
+global projdata =	"C:\Users\jpepin\Dropbox\Data\TESS\TESS3_217_Pepin_Client.dta" /* Campus */
 use		"$projdata", clear
 
 ********************************************************************************************
@@ -83,6 +84,7 @@ rename			d14		west
 ********************************************************************************************
 // Vignette Conditions
 ********************************************************************************************
+// Install http://fmwww.bc.edu/repec/bocode/v/vreverse.hlp if not already installed
 
 *Married and Parent Condition
 vreverse DOV_RELSTAT, gen(mar)
