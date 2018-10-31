@@ -91,7 +91,7 @@ vreverse DOV_RELSTAT, gen(mar)
 rename 		DOV_PARENTST 	parent
 
 egen 		marpar = group(mar parent)
-label 		define marparlbl 1 "Cohabit/No kids" 2 "Cohabit/Parent" 3 "Married/No kids" 4 "Married/Parent"
+label 		define marparlbl 1 "Cohabit/Nonparent" 2 "Cohabit/Parent" 3 "Married/Nonparent" 4 "Married/Parent"
 label		values marpar marparlbl
 
 tab 		marpar, gen(mp)
@@ -101,9 +101,13 @@ rename 		mp3 mnk
 rename 		mp4 mp
 
 *Breadwinner Condition
-rename 		DOV_EARNING		relinc
+cap drop	relinc
+gen			relinc=.
+replace		relinc=1 if DOV_EARNING==1
+replace		relinc=2 if DOV_EARNING==3
+replace		relinc=3 if DOV_EARNING==2
 
-label define relinclbl 1 "Male Breadwinner" 2 "Female Breadwinner" 3 "Equal Earners"
+label define relinclbl 1 "Male Breadwinner" 2 "Equal Earners" 3 "Female Breadwinner"
 label values relinc relinclbl
 
 
@@ -136,16 +140,19 @@ label		values mardur mardurlbl
 ********************************************************************************************
 // Dependent Variables
 ********************************************************************************************
-rename 		B01				organize
-replace		organize=. if 	organize==-1
+cap drop	organize
+gen			organize=.
+replace		organize=1 if B01==1
+replace		organize=2 if B01==3
+replace		organize=3 if B01==2
 
-label define 	organizelbl 		1 "Shared" 2 "Separate" 3 "Both" 
+label define 	organizelbl 		1 "Shared" 2 "Both" 3 "Separate" 
 label values 	organize 			organizelbl
 
 tab organize, gen(o1)
 rename	o11 shared
-rename	o12 separate
-rename	o13 both
+rename	o12 both
+rename	o13 separate
 
 rename	B02_Shared 		herjoint
 rename	B03_Shared		hisjoint

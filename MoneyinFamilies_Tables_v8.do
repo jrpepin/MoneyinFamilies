@@ -53,11 +53,10 @@ tabstat		female		rmar		rcohab		nevmar		altmar		child				///
 ********************************************************************************************
 // Table 3 -- Statistical Analysis of Perceptions of Money Organization
 ********************************************************************************************
-// Be careful here because the relative earning coefficients come out in the opposite order 
-// as presented in the tables.
+// Install net install st0085_2.pkg if not already installed
 
-// Marital status, duration, parental status, relative earnings
 // Use robust option to match outcome of svy output. Can't use svy and get BIC, hausman, or lr
+// AKA Appendix Table A
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 eststo m1: 	mlogit 		organize 	i.mar i.par i.dur i.relinc  $ivars, robust baseoutcome(1)
 
@@ -70,53 +69,61 @@ mlogtest, 	combine
 mlogtest, 	wald
 *mlogtest, 	lr				/* Can't be run with survey weights or the robust option */
 
-// Figure for presentation (not in paper)
+// This code doesn't run all the way through. Must run m1 after each test
 ********************************************************************************************
-/* This code doesn't run all the way through. Must run m1 after each test */
 /*
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
-eststo m1: 	mlogit 		organize 	i.mar i.dur i.par i.relinc  $ivars, robust baseoutcome(1)
+eststo m1: 	mlogit 		organize 	i.mar i.par i.dur i.relinc  $ivars, robust baseoutcome(1)
+// comparisons within marital status
+	predict pcohab1 if mar==1, outcome(1)
+	predict pcohab2 if mar==1, outcome(2)
+	predict pcohab3 if mar==1, outcome(3)
+	ttest pcohab1 == pcohab2
+	ttest pcohab1 == pcohab3
+	ttest pcohab2 == pcohab3
+	
+	predict pmar1 if mar==2, outcome(1)
+	predict pmar2 if mar==2, outcome(2)
+	predict pmar3 if mar==2, outcome(3)
+	ttest pmar1 == pmar2
+	ttest pmar1 == pmar3
+	ttest pmar2 == pmar3
 
+//Marital status
 margins i.mar									, predict(outcome(1)) 	/* Shared 	*/
 margins i.mar									, predict(outcome(1)) 	 coeflegend post
 				test (_b[1bn.mar]=_b[2.mar])
-				
-margins i.mar									, predict(outcome(3))	/* Both	  	*/ 
-margins i.mar									, predict(outcome(3))	coeflegend post
-				test (_b[1bn.mar]=_b[2.mar])
-
-margins i.mar									, predict(outcome(2))	/* Separate	*/
+margins i.mar									, predict(outcome(2))	/* Both	  	*/ 
 margins i.mar									, predict(outcome(2))	coeflegend post
 				test (_b[1bn.mar]=_b[2.mar])
-
-margins i.dur									, predict(outcome(1)) 	/* Shared 	*/
-margins i.dur									, predict(outcome(1)) 	coeflegend post
-				test (_b[1bn.dur]=_b[2.dur])
-
-margins i.dur									, predict(outcome(3))	/* Both	  	*/
-margins i.dur									, predict(outcome(3))	coeflegend post
-				test (_b[1bn.dur]=_b[2.dur])
-margins i.dur									, predict(outcome(2))	/* Separate	*/
-margins i.dur									, predict(outcome(2))	coeflegend post
-				test (_b[1bn.dur]=_b[2.dur])
-
+margins i.mar									, predict(outcome(3))	/* Separate	*/
+margins i.mar									, predict(outcome(3))	coeflegend post
+				test (_b[1bn.mar]=_b[2.mar])
+//Parental status
 margins i.par									, predict(outcome(1)) 	/* Shared 	*/
 margins i.par									, predict(outcome(1)) 	coeflegend post
 				test (_b[1bn.par]=_b[2.par])
-margins i.par									, predict(outcome(3))	/* Both	  	*/
-margins i.par									, predict(outcome(3))	coeflegend post
-				test (_b[1bn.par]=_b[2.par])
-margins i.par									, predict(outcome(2))	/* Separate	*/
+margins i.par									, predict(outcome(2))	/* Both	  	*/
 margins i.par									, predict(outcome(2))	coeflegend post
 				test (_b[1bn.par]=_b[2.par])
+margins i.par									, predict(outcome(3))	/* Separate	*/
+margins i.par									, predict(outcome(3))	coeflegend post
+				test (_b[1bn.par]=_b[2.par])
+//Relationshp duration
+margins i.dur									, predict(outcome(1)) 	/* Shared 	*/
+margins i.dur									, predict(outcome(1)) 	coeflegend post
+				test (_b[1bn.dur]=_b[2.dur])
+margins i.dur									, predict(outcome(2))	/* Both	  	*/
+margins i.dur									, predict(outcome(2))	coeflegend post
+				test (_b[1bn.dur]=_b[2.dur])
+margins i.dur									, predict(outcome(3))	/* Separate	*/
+margins i.dur									, predict(outcome(3))	coeflegend post
+				test (_b[1bn.dur]=_b[2.dur])
 */
 
 ********************************************************************************************
 // Table 4 -- Marital Status Interactions
 ********************************************************************************************
-// Be careful here because the relative earning coefficients come out in the opposite order 
-// as presented in the tables.
-
 			
 // Marital status * Parental Status
 ********************************************************************************************
@@ -236,10 +243,6 @@ margins 	i.mardur									, predict(outcome(2)) coeflegend post
 ********************************************************************************************
 // Table 5 -- Statistical Analysis of Perceptions of Degree of Partial-Pooling
 ********************************************************************************************
-
-// Be careful here because the relative earning coefficients come out in the opposite order 
-// as presented in the tables.
-
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 eststo m1: 	regress		jointper 	i.relinc	mar par			dur	$ivars
 estimates 	store 		jointper
@@ -412,85 +415,3 @@ global 		ivars " rcohab nevmar altmar child whitedum lths bach employ incdum age
 regress		hercent 	i.marpar	i.relinc##i.female	dur	$ivars
 regress		hiscent 	i.marpar	i.relinc##i.female	dur	$ivars
 
-
-********************************************************************************************
-// Appendix Table A -- Dependent Variables by Vignette Condition (unweighted)
-********************************************************************************************
-tabstat		shared			separate		both										///
-			hiscent			hercent			jointper									///
-			, by(mar)		stat(mean sd)	col(stat)
-
-tabstat		shared			separate		both										///
-			hiscent			hercent			jointper									///
-			, by(parent)	stat(mean sd)	col(stat)
-
-tabstat		shared			separate		both										///
-			hiscent			hercent			jointper									///
-			, by(relinc)	stat(mean sd)	col(stat)
-
-			
-mean shared, over(mar)
-lincom 		[shared]_subpop_1 	- [shared]_subpop_2
-mean separate, over(mar)
-lincom 		[separate]_subpop_1 - [separate]_subpop_2
-mean both, over(mar)
-lincom 		[both]_subpop_1 	- [both]_subpop_2
-mean hiscent, over(mar)
-lincom 		[hiscent]_subpop_1 	- [hiscent]_subpop_2
-mean hercent, over(mar)
-lincom 		[hercent]_subpop_1 	- [hercent]_subpop_2
-mean jointper, over(mar)
-lincom 		[jointper]_subpop_1 - [jointper]_subpop_2
-
-mean shared, over(par)
-lincom 		[shared]_subpop_1 	- [shared]_subpop_2
-mean separate, over(par)
-lincom 		[separate]_subpop_1 - [separate]_subpop_2
-mean both, over(par)
-lincom 		[both]_subpop_1 	- [both]_subpop_2
-mean hiscent, over(par)
-lincom 		[hiscent]_subpop_1 	- [hiscent]_subpop_2
-mean hercent, over(par)
-lincom 		[hercent]_subpop_1 	- [hercent]_subpop_2
-mean jointper, over(par)
-lincom 		[jointper]_subpop_1 - [jointper]_subpop_2
-
-
-mean shared, over(femearn)
-lincom 		[shared]0 	- [shared]1
-mean separate, over(femearn)
-lincom 		[separate]0 - [separate]1
-mean both, over(femearn)
-lincom 		[both]0 	- [both]1
-mean hiscent, over(femearn)
-lincom 		[hiscent]0 	- [hiscent]1
-mean hercent, over(femearn)
-lincom 		[hercent]0 	- [hercent]1
-mean jointper, over(femearn)
-lincom 		[jointper]0 - [jointper]1
-
-mean shared, over(equalearn)
-lincom 		[shared]0 	- [shared]1
-mean separate, over(equalearn)
-lincom 		[separate]0 - [separate]1
-mean both, over(equalearn)
-lincom 		[both]0 	- [both]1
-mean hiscent, over(equalearn)
-lincom 		[hiscent]0 	- [hiscent]1
-mean hercent, over(equalearn)
-lincom 		[hercent]0 	- [hercent]1
-mean jointper, over(equalearn)
-lincom 		[jointper]0 - [jointper]1
-
-mean shared, over(femequal)
-lincom 		[shared]0 	- [shared]1
-mean separate, over(femequal)
-lincom 		[separate]0 - [separate]1
-mean both, over(femequal)
-lincom 		[both]0 	- [both]1
-mean hiscent, over(femequal)
-lincom 		[hiscent]0 	- [hiscent]1
-mean hercent, over(femequal)
-lincom 		[hercent]0 	- [hercent]1
-mean jointper, over(femequal)
-lincom 		[jointper]0 - [jointper]1
