@@ -1,6 +1,6 @@
 // Set the project directory folder where data and do files are saved
-* global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code/MoneyinFamilies" /* Home */
-global projdir 	= 	"\\prc-cs-f9dkb42\jpepin$\MoneyinFamilies" /* Campus */
+global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code/MoneyinFamilies" /* Home */
+* global projdir 	= 	"\\prc-cs-f9dkb42\jpepin$\MoneyinFamilies" /* Campus */
 
 // Code variables and create analytic sample
 cd 		"$projdir"
@@ -51,7 +51,7 @@ tabstat		female		rmar		rcohab		nevmar		altmar		child				///
 
 
 ********************************************************************************************
-// Table 3 -- Statistical Analysis of Perceptions of Money Organization
+// Table 3 -- Statistical Analysis of Marital Status, Parental Status, & Relationship Duration
 ********************************************************************************************
 // Install net install st0085_2.pkg if not already installed
 
@@ -71,23 +71,10 @@ mlogtest, 	wald
 
 // This code doesn't run all the way through. Must run m1 after each test
 ********************************************************************************************
-/*
+
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 eststo m1: 	mlogit 		organize 	i.mar i.par i.dur i.relinc  $ivars, robust baseoutcome(1)
-// comparisons within marital status
-	predict pcohab1 if mar==1, outcome(1)
-	predict pcohab2 if mar==1, outcome(2)
-	predict pcohab3 if mar==1, outcome(3)
-	ttest pcohab1 == pcohab2
-	ttest pcohab1 == pcohab3
-	ttest pcohab2 == pcohab3
-	
-	predict pmar1 if mar==2, outcome(1)
-	predict pmar2 if mar==2, outcome(2)
-	predict pmar3 if mar==2, outcome(3)
-	ttest pmar1 == pmar2
-	ttest pmar1 == pmar3
-	ttest pmar2 == pmar3
+
 
 //Marital status
 margins i.mar									, predict(outcome(1)) 	/* Shared 	*/
@@ -366,6 +353,57 @@ margins 	i.marpar
 ********************************************************************************************
 // Number of respondents per condition
 tab marpar relinc
+
+// Table 3 comparisons within categories
+/*
+global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
+eststo m1: 	mlogit 		organize 	i.mar i.par i.dur i.relinc  $ivars, robust baseoutcome(1)
+
+// comparisons within marital status
+	predict pcohab1 if mar==1, outcome(1)
+	predict pcohab2 if mar==1, outcome(2)
+	predict pcohab3 if mar==1, outcome(3)
+	ttest pcohab1 == pcohab2
+	ttest pcohab1 == pcohab3
+	ttest pcohab2 == pcohab3
+	
+	predict pmar1 if mar==2, outcome(1)
+	predict pmar2 if mar==2, outcome(2)
+	predict pmar3 if mar==2, outcome(3)
+	ttest pmar1 == pmar2
+	ttest pmar1 == pmar3
+	ttest pmar2 == pmar3
+	
+// comparisons within parental status
+	predict nokid1 if par==1, outcome(1)
+	predict nokid2 if par==1, outcome(2)
+	predict nokid3 if par==1, outcome(3)
+	ttest nokid1 == nokid2
+	ttest nokid1 == nokid3
+	ttest nokid2 == nokid3
+	
+	predict kid1 if par==2, outcome(1)
+	predict kid2 if par==2, outcome(2)
+	predict kid3 if par==2, outcome(3)
+	ttest kid1 == kid2
+	ttest kid1 == kid3
+	ttest kid2 == kid3
+	
+// comparisons within relationship duration
+	predict three1 if dur==1, outcome(1)
+	predict three2 if dur==1, outcome(2)
+	predict three3 if dur==1, outcome(3)
+	ttest three1 == three2
+	ttest three1 == three3
+	ttest three2 == three3
+	
+	predict sev1 if dur==2, outcome(1)
+	predict sev2 if dur==2, outcome(2)
+	predict sev3 if dur==2, outcome(3)
+	ttest sev1 == sev2
+	ttest sev1 == sev3
+	ttest sev2 == sev3
+ */
 
 // Do gendered relative earnings predict the type of distribution?
 	// No
