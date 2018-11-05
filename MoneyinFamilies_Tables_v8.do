@@ -150,8 +150,8 @@ margins 	i.marpar									, predict(outcome(1)) coeflegend post
 
 *BOTH
 mlogit 		organize 	i.marpar 	i.dur i.relinc  $ivars, robust baseoutcome(1)
-margins 	i.marpar									, predict(outcome(3)) /* Get CI */
-margins 	i.marpar									, predict(outcome(3)) coeflegend post
+margins 	i.marpar									, predict(outcome(2)) /* Get CI */
+margins 	i.marpar									, predict(outcome(2)) coeflegend post
 			test (1bn.marpar=2.marpar)
 			test (1bn.marpar=3.marpar)
 			test (1bn.marpar=4.marpar)
@@ -161,8 +161,8 @@ margins 	i.marpar									, predict(outcome(3)) coeflegend post
 
 * SEPARATE
 mlogit 		organize 	i.marpar 	i.dur i.relinc  $ivars, robust baseoutcome(1)
-margins 	i.marpar									, predict(outcome(2)) /* Get CI */
-margins 	i.marpar									, predict(outcome(2)) coeflegend post
+margins 	i.marpar									, predict(outcome(3)) /* Get CI */
+margins 	i.marpar									, predict(outcome(3)) coeflegend post
 			test (1bn.marpar=2.marpar)
 			test (1bn.marpar=3.marpar)
 			test (1bn.marpar=4.marpar)
@@ -190,7 +190,7 @@ mlogtest, 	wald
 
 
 // Figure 3
-mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
+global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 
 * SHARED
 // use "coeflegend post" option to see what Stata calls each variable
@@ -206,8 +206,8 @@ margins 	i.mardur									, predict(outcome(1)) coeflegend post
 			
 *BOTH
 mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
-margins 	i.mardur									, predict(outcome(3)) /* get CI */
-margins 	i.mardur									, predict(outcome(3)) coeflegend post
+margins 	i.mardur									, predict(outcome(2)) /* get CI */
+margins 	i.mardur									, predict(outcome(2)) coeflegend post
 			test (1bn.mardur=2.mardur)
 			test (1bn.mardur=3.mardur)
 			test (1bn.mardur=4.mardur)
@@ -217,8 +217,8 @@ margins 	i.mardur									, predict(outcome(3)) coeflegend post
 
 * SEPARATE
 mlogit 		organize 	i.mardur 	i.par i.relinc  $ivars, robust baseoutcome(1)
-margins 	i.mardur									, predict(outcome(2)) /* get CI */
-margins 	i.mardur									, predict(outcome(2)) coeflegend post
+margins 	i.mardur									, predict(outcome(3)) /* get CI */
+margins 	i.mardur									, predict(outcome(3)) coeflegend post
 			test (1bn.mardur=2.mardur)
 			test (1bn.mardur=3.mardur)
 			test (1bn.mardur=4.mardur)
@@ -233,48 +233,23 @@ margins 	i.mardur									, predict(outcome(2)) coeflegend post
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 eststo m1: 	regress		jointper 	i.relinc	mar par			dur	$ivars
 estimates 	store 		jointper
+margins i.relinc, coeflegend post
 eststo m2: 	regress		hiscent 	i.relinc	mar par			dur	$ivars
 estimates 	store 		hiscent4a
+margins i.relinc, coeflegend post
 eststo m3: 	regress		hercent 	i.relinc	mar par			dur	$ivars
 estimates 	store 		hercent4a
+margins i.relinc, coeflegend post
+
 
 esttab  m1 m2 m3 using FamilyIncome--table5.csv, cells(b(star fmt(2)) se(par fmt(2))) ///
 		varlabels(_cons Constant) legend label stats(N) stardetach replace
 		
-/// Combine regression outputs
-suest 		 hiscent4a hercent4a
-
-/* Test significance between his and her % by Mar/Par 		
-	Also see cnk estimates									*/
-test 		[hiscent4a_mean]cp	=[hercent4a_mean]cp					/* Cohab/Parents 		*/
-test 		[hiscent4a_mean]mnk	=[hercent4a_mean]mnk				/* Married/Non parents 	*/
-test 		[hiscent4a_mean]mp	=[hercent4a_mean]mp					/* Married/Parents		*/
-
 /* Test significance between his and her percentages 		*/
+suest 		 hiscent4a hercent4a /* Combine regression outputs */
 test 		[hiscent4a_mean]1.relinc	=[hercent4a_mean]3.relinc	/* Male breadwinner/His vs Female Breadwinner/Her		*/
 
-/* Need the cnk estimates for MAR/Par Comparisons			*/
-	svy:		regress		hiscent 	cnk mnk mp			$ivars	
-	estimates 	store 		hiscent4b
-	svy:		regress		hercent 	cnk mnk mp			$ivars
-	estimates 	store 		hercent4b
-
-	/// Combine regression outputs
-	suest		 hiscent4b hercent4b
-	test 		[hiscent4b_mean]cnk	=[hercent4b_mean]cnk				/*Cohab/Non Parents		*/
-
-// Change reference group for Table marpar comparisons
-eststo m1: 	regress		jointper 	cnk mnk mp	i.relinc	dur	$ivars
-eststo m1: 	regress		jointper 	cp  cnk mp	i.relinc	dur	$ivars
-
-eststo m2: 	regress		hiscent 	cnk mnk mp	i.relinc	dur	$ivars
-eststo m2: 	regress		hiscent 	cp  cnk mp	i.relinc	dur	$ivars
-
-eststo m3: 	regress		hercent 	cnk mnk mp	i.relinc	dur	$ivars
-eststo m3: 	regress		hercent 	cp  cnk mp	i.relinc	dur	$ivars
 ********************************************************************************************
-
-
 ********************************************************************************************
 //Figure 4
 // Use the Bonferroni adjustment means take alpha level ( p = .05) and divide it by number of 
@@ -284,21 +259,21 @@ global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incd
 
 regress		jointper 	i.marpar	i.relinc	dur	$ivars
 margins 	i.relinc
-			test (1bn.relinc=3.relinc)		/*MB to EE*/
-			test (2.relinc=3.relinc)		/*FB to EE*/
-			test (1bn.relinc=2.relinc)		/*MB to FB*/
+			test (1bn.relinc=2.relinc)		/*MP to EE*/
+			test (1bn.relinc=3.relinc)		/*MP to FP*/
+			test (2.relinc=3.relinc)		/*FP to EE*/
 			
 regress		hiscent 	i.marpar	i.relinc	dur	$ivars
 margins 	i.relinc
-			test (1bn.relinc=3.relinc)		/*MB to EE*/
-			test (2.relinc=3.relinc)		/*FB to EE*/
-			test (1bn.relinc=2.relinc)		/*MB to FB*/
+			test (1bn.relinc=2.relinc)		/*MP to EE*/
+			test (1bn.relinc=3.relinc)		/*MP to FP*/
+			test (2.relinc=3.relinc)		/*FP to EE*/
 			
 regress		hercent 	i.marpar	i.relinc	dur	$ivars
 margins 	i.relinc
-			test (1bn.relinc=3.relinc)		/*MB to EE*/
-			test (2.relinc=3.relinc)		/*FB to EE*/
-			test (1bn.relinc=2.relinc)		/*MB to FB*/
+			test (1bn.relinc=2.relinc)		/*MP to EE*/
+			test (1bn.relinc=3.relinc)		/*MP to FP*/
+			test (2.relinc=3.relinc)		/*FP to EE*/
 
 //Appendix Figure
 /*
@@ -427,25 +402,18 @@ margins 	marpar#relinc,											coeflegend post
 ********************************************************************************************
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 
-
-regress		alljoinper 	i.marpar	i.relinc	dur	$ivars
-margins 	i.marpar,											coeflegend post
-
-regress		allhis 		i.marpar	i.relinc	dur	$ivars
-margins 	i.marpar,											coeflegend post
-
-regress		allher 		i.marpar	i.relinc	dur	$ivars
-margins 	i.marpar,											coeflegend post
-
-
-regress		alljoinper 	i.marpar	i.relinc	dur	$ivars
+regress		alljoinper 	i.relinc	mar	par	dur		$ivars
+margins 	i.relinc,											coeflegend post
+regress		allhis	 	i.relinc	mar	par	dur		$ivars
+estimates 	store 		hiscent4c
+margins 	i.relinc,											coeflegend post
+regress		allher	 	i.relinc	mar	par	dur		$ivars
+estimates 	store 		hercent4c
 margins 	i.relinc,											coeflegend post
 
-regress		allhis	 	i.marpar	i.relinc	dur	$ivars
-margins 	i.relinc,											coeflegend post
-
-regress		allher	 	i.marpar	i.relinc	dur	$ivars
-margins 	i.relinc,											coeflegend post
+	/* Test significance between his and her percentages 		*/
+	suest		 hiscent4c hercent4c
+	test 		[hiscent4c_mean]1.relinc	=[hercent4c_mean]3.relinc	/* Male breadwinner/His vs Female Breadwinner/Her		*/
 
 
 /// Interactions

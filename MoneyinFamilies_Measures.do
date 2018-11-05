@@ -100,14 +100,14 @@ rename 		mp2 cp
 rename 		mp3 mnk
 rename 		mp4 mp
 
-*Breadwinner Condition
+*Primary Earning Conditions
 cap drop	relinc
 gen			relinc=.
 replace		relinc=1 if DOV_EARNING==1
 replace		relinc=2 if DOV_EARNING==3
 replace		relinc=3 if DOV_EARNING==2
 
-label define relinclbl 1 "Male Breadwinner" 2 "Equal Earners" 3 "Female Breadwinner"
+label define relinclbl 1 "Man Primary Earner" 2 "Equal Earners" 3 "Woman Primary Earner"
 label values relinc relinclbl
 
 
@@ -171,8 +171,8 @@ edit 	CaseID DOV_B02_MaxValue herjoint herindv DOV_B03_MaxValue hisjoint hisindv
 drop 	if CaseID==902 |  CaseID==1962
 
 		
-replace herjoint=0 	if 	herjoint==. & orga==3
-replace	hisindv=0 	if	hisindv==.	& orga==3
+replace herjoint=0 	if 	herjoint==. & orga==2
+replace	hisindv=0 	if	hisindv==.	& orga==2
 
 count
 
@@ -194,57 +194,57 @@ replace jointall=4000 if jointtot==.
 // Percentages
 cap drop	herperj
 gen			herperj=.
-replace		herperj=herjoint/1200 if relinc==1 & orga==3
-replace		herperj=herjoint/2800 if relinc==2 & orga==3
-replace		herperj=herjoint/2000 if relinc==3 & orga==3
+replace		herperj=herjoint/1200 if relinc==1 & orga==2
+replace		herperj=herjoint/2800 if relinc==3 & orga==2
+replace		herperj=herjoint/2000 if relinc==2 & orga==2
 
 cap drop	herperi
 gen			herperi=.
-replace		herperi=herindv/1200 if relinc==1 & orga==3
-replace		herperi=herindv/2800 if relinc==2 & orga==3
-replace		herperi=herindv/2000 if relinc==3 & orga==3
+replace		herperi=herindv/1200 if relinc==1 & orga==2
+replace		herperi=herindv/2800 if relinc==3 & orga==2
+replace		herperi=herindv/2000 if relinc==2 & orga==2
 
 cap drop	hisperj
 gen			hisperj=.
-replace		hisperj=hisjoint/2800 if relinc==1 & orga==3
-replace		hisperj=hisjoint/1200 if relinc==2 & orga==3
-replace		hisperj=hisjoint/2000 if relinc==3 & orga==3
+replace		hisperj=hisjoint/2800 if relinc==1 & orga==2
+replace		hisperj=hisjoint/1200 if relinc==3 & orga==2
+replace		hisperj=hisjoint/2000 if relinc==2 & orga==2
 
 cap drop	hisperi
 gen			hisperi=.
-replace		hisperi=hisindv/2800 if relinc==1 & orga==3
-replace		hisperi=hisindv/1200 if relinc==2 & orga==3
-replace		hisperi=hisindv/2000 if relinc==3 & orga==3
+replace		hisperi=hisindv/2800 if relinc==1 & orga==2
+replace		hisperi=hisindv/1200 if relinc==3 & orga==2
+replace		hisperi=hisindv/2000 if relinc==2 & orga==2
 
 cap drop	jointper
 gen			jointper=.
-replace		jointper=(herjoint + hisjoint)/4000 	if orga==3
+replace		jointper=(herjoint + hisjoint)/4000 	if orga==2
 
 cap drop	alljoinper
 gen			alljoinper=jointper
 replace		alljoinper=1 if orga==1
-replace		alljoinper=0 if orga==2
+replace		alljoinper=0 if orga==3
 
 cap drop	hiscent
 gen			hiscent=.
-replace		hiscent=hisindv/4000 if orga==3
+replace		hiscent=hisindv/4000 if orga==2
 
 cap drop	allhis
 gen			allhis=hiscent
 replace		allhis=0 				if orga==1
-replace		allhis=.5				if orga==2 & relinc==3
-replace		allhis=.7				if orga==2 & relinc==1
-replace		allhis=.3				if orga==2 & relinc==2
+replace		allhis=.5				if orga==3 & relinc==2
+replace		allhis=.7				if orga==3 & relinc==1
+replace		allhis=.3				if orga==3 & relinc==3
 
 
 
 cap drop	hercent
 gen			hercent=.
-replace		hercent=herindv/4000 	if orga==3
+replace		hercent=herindv/4000 	if orga==2
 
 cap drop	allher
 gen			allher=hercent
 replace		allher=0 				if orga==1
-replace		allher=.5				if orga==2 & relinc==3
-replace		allher=.7				if orga==2 & relinc==2
-replace		allher=.3				if orga==2 & relinc==1
+replace		allher=.5				if orga==3 & relinc==2
+replace		allher=.7				if orga==3 & relinc==3
+replace		allher=.3				if orga==3 & relinc==1
