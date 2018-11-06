@@ -1,6 +1,6 @@
 // Set the project directory folder where data and do files are saved
-global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code/MoneyinFamilies" /* Home */
-* global projdir 	= 	"\\prc-cs-f9dkb42\jpepin$\MoneyinFamilies" /* Campus */
+*global projdir 	= 	"D:/Dropbox/@Dissertation/Survey/Code/MoneyinFamilies" /* Home */
+global projdir 	= 	"\\prc-cs-f9dkb42\jpepin$\MoneyinFamilies" /* Campus */
 
 // Code variables and create analytic sample
 cd 		"$projdir"
@@ -9,38 +9,6 @@ do		"$projdir/MoneyinFamilies_Measures.do"
 // Missing data
 tab 	organ, m		/* Drop people who didn't answer the primary question of interest 	*/
 drop if organ==.		/* 31 observations dropped */
-
-*******************************************************************
-// Minimal Detectable Effect
-// Orga
-	//Marst
-power twomeans .29, 	power(0.8) n(3986) sd(.45) //shared
-power twomeans .23, 	power(0.8) n(3986) sd(.42) //sep
-power twomeans .48, 	power(0.8) n(3986) sd(.50) //both
-	//Parent
-power twomeans .36, 	power(0.8) n(3986) sd(.48) //shared
-power twomeans .20, 	power(0.8) n(3986) sd(.40) //sep
-power twomeans .44, 	power(0.8) n(3986) sd(.50) //both
-	//Rel. Earning
-power twomeans .40, 	power(0.8) n(3986) sd(.49) //shared
-power twomeans .17, 	power(0.8) n(3986) sd(.37) //sep
-power twomeans .43, 	power(0.8) n(3986) sd(.50) //both
-	
-
-// Distributuion
-	//Marst
-power twomeans .21, 	power(0.8) n(1784) sd(.12) //His
-power twomeans .23, 	power(0.8) n(1784) sd(.14) //Her
-power twomeans .56, 	power(0.8) n(1784) sd(.18) //Joint
-	//Parent
-power twomeans .21, 	power(0.8) n(1784) sd(.13) //His
-power twomeans .23, 	power(0.8) n(1784) sd(.13) //Her
-power twomeans .56, 	power(0.8) n(1784) sd(.19) //Joint
-	//Rel. Earning
-power twomeans .28, 	power(0.8) n(1784) sd(.15) //His
-power twomeans .13, 	power(0.8) n(1784) sd(.06) //Her
-power twomeans .59, 	power(0.8) n(1784) sd(.19) //Joint
-*******************************************************************
 
 ********************************************************************************************
 // Table 2 -- Demographic Characteristics (unweighted)
@@ -71,7 +39,7 @@ mlogtest, 	wald
 
 // This code doesn't run all the way through. Must run m1 after each test
 ********************************************************************************************
-
+/*
 global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
 eststo m1: 	mlogit 		organize 	i.mar i.par i.dur i.relinc  $ivars, robust baseoutcome(1)
 
@@ -275,54 +243,6 @@ margins 	i.relinc
 			test (1bn.relinc=3.relinc)		/*MP to FP*/
 			test (2.relinc=3.relinc)		/*FP to EE*/
 
-//Appendix Figure
-/*
-global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
-
-regress		jointper 	i.marpar	i.relinc	dur	$ivars
-margins 	i.marpar
-			test (1bn.marpar=2.marpar)
-			test (1bn.marpar=3.marpar)
-			test (1bn.marpar=4.marpar)
-			test (2.marpar=3.marpar)
-			test (2.marpar=4.marpar)
-			test (3.marpar=4.marpar)
-
-			nlcom _b[1bn.marpar]
-			nlcom _b[2.marpar]
-			nlcom _b[3.marpar]
-			nlcom _b[4.marpar]
-
-			
-regress		hiscent 	i.marpar	i.relinc	dur	$ivars
-margins 	i.marpar
-			test (1bn.marpar=2.marpar)
-			test (1bn.marpar=3.marpar)
-			test (1bn.marpar=4.marpar)
-			test (2.marpar=3.marpar)
-			test (2.marpar=4.marpar)
-			test (3.marpar=4.marpar)
-
-			nlcom _b[1bn.marpar]
-			nlcom _b[2.marpar]
-			nlcom _b[3.marpar]
-			nlcom _b[4.marpar]
-
-			
-regress		hercent 	i.marpar	i.relinc	dur	$ivars
-margins 	i.marpar
-			test (1bn.marpar=2.marpar)
-			test (1bn.marpar=3.marpar)
-			test (1bn.marpar=4.marpar)
-			test (2.marpar=3.marpar)
-			test (2.marpar=4.marpar)
-			test (3.marpar=4.marpar)
-
-			nlcom _b[1bn.marpar]
-			nlcom _b[2.marpar]
-			nlcom _b[3.marpar]
-			nlcom _b[4.marpar]
-*/
 ********************************************************************************************
 // Paper Notes
 ********************************************************************************************
@@ -397,6 +317,61 @@ margins 	marpar#relinc,											coeflegend post
 regress		hiscent 	i.marpar##i.relinc	dur	$ivars
 margins 	marpar#relinc,											coeflegend post
 
+
+********************************************************************************************
+// Robustness check of the Table 4 conclusions
+********************************************************************************************
+//Appendix Figure 1
+global 		ivars "female rcohab nevmar altmar child whitedum lths bach employ incdum age"
+
+regress		jointper 	i.marpar	i.relinc	dur	$ivars
+margins 	i.marpar
+			test (1bn.marpar=2.marpar)
+			test (1bn.marpar=3.marpar)
+			test (1bn.marpar=4.marpar)
+			test (2.marpar=3.marpar)
+			test (2.marpar=4.marpar)
+			test (3.marpar=4.marpar)
+
+			nlcom _b[1bn.marpar]
+			nlcom _b[2.marpar]
+			nlcom _b[3.marpar]
+			nlcom _b[4.marpar]
+
+			
+regress		hiscent 	i.marpar	i.relinc	dur	$ivars
+margins 	i.marpar
+			test (1bn.marpar=2.marpar)
+			test (1bn.marpar=3.marpar)
+			test (1bn.marpar=4.marpar)
+			test (2.marpar=3.marpar)
+			test (2.marpar=4.marpar)
+			test (3.marpar=4.marpar)
+
+			nlcom _b[1bn.marpar]
+			nlcom _b[2.marpar]
+			nlcom _b[3.marpar]
+			nlcom _b[4.marpar]
+
+			
+regress		hercent 	i.marpar	i.relinc	dur	$ivars
+margins 	i.marpar
+			test (1bn.marpar=2.marpar)
+			test (1bn.marpar=3.marpar)
+			test (1bn.marpar=4.marpar)
+			test (2.marpar=3.marpar)
+			test (2.marpar=4.marpar)
+			test (3.marpar=4.marpar)
+
+			nlcom _b[1bn.marpar]
+			nlcom _b[2.marpar]
+			nlcom _b[3.marpar]
+			nlcom _b[4.marpar]
+*/
+
+
+
+
 ********************************************************************************************
 // Robustness check of the partial-pooling conclusions
 ********************************************************************************************
@@ -421,3 +396,34 @@ global 		ivars " rcohab nevmar altmar child whitedum lths bach employ incdum age
 regress		hercent 	i.marpar	i.relinc##i.female	dur	$ivars
 regress		hiscent 	i.marpar	i.relinc##i.female	dur	$ivars
 
+*******************************************************************
+// Minimal Detectable Effect
+// Orga
+	//Marst
+power twomeans .29, 	power(0.8) n(3986) sd(.45) //shared
+power twomeans .23, 	power(0.8) n(3986) sd(.42) //sep
+power twomeans .48, 	power(0.8) n(3986) sd(.50) //both
+	//Parent
+power twomeans .36, 	power(0.8) n(3986) sd(.48) //shared
+power twomeans .20, 	power(0.8) n(3986) sd(.40) //sep
+power twomeans .44, 	power(0.8) n(3986) sd(.50) //both
+	//Rel. Earning
+power twomeans .40, 	power(0.8) n(3986) sd(.49) //shared
+power twomeans .17, 	power(0.8) n(3986) sd(.37) //sep
+power twomeans .43, 	power(0.8) n(3986) sd(.50) //both
+	
+
+// Distributuion
+	//Marst
+power twomeans .21, 	power(0.8) n(1784) sd(.12) //His
+power twomeans .23, 	power(0.8) n(1784) sd(.14) //Her
+power twomeans .56, 	power(0.8) n(1784) sd(.18) //Joint
+	//Parent
+power twomeans .21, 	power(0.8) n(1784) sd(.13) //His
+power twomeans .23, 	power(0.8) n(1784) sd(.13) //Her
+power twomeans .56, 	power(0.8) n(1784) sd(.19) //Joint
+	//Rel. Earning
+power twomeans .28, 	power(0.8) n(1784) sd(.15) //His
+power twomeans .13, 	power(0.8) n(1784) sd(.06) //Her
+power twomeans .59, 	power(0.8) n(1784) sd(.19) //Joint
+*******************************************************************
